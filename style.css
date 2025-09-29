@@ -4,14 +4,14 @@
 html, body {
   margin: 0;
   height: 100%;
-  overflow-x: hidden; /* 🔧 previene scroll lateral */
+  overflow-x: hidden;
 }
 
 body {
   font-family: Arial, sans-serif;
   background: #f5f5f5;
-  padding-top: 80px; /* 🔧 asegura que el contenido no quede oculto bajo el header fijo */
-  padding-bottom: 0; /* 🔧 ajusta según la altura real del footer */
+  padding-top: 80px;
+  padding-bottom: 0;
 }
 
 /* =========================================================
@@ -81,28 +81,29 @@ header {
 
 .icon:hover {
   transform: scale(1.1);
-  filter: brightness(0) invert(1) drop-shadow(0 0 5px rgba(255,255,255,0.7))
+  filter: brightness(0) invert(1) drop-shadow(0 0 5px rgba(255,255,255,0.7));
 }
 
 /* =========================================================
-   3. SECCIONES GENERALES
+   3. CONTROL DE VISIBILIDAD
    ========================================================= */
-main { margin-top: 90px; } /* 🔧 separa contenido del header fijo */
-.seccion { padding: 20px; }
-
-.oculto { display: none; }
+.oculto {
+  display: none !important;
+}
 
 /* =========================================================
    4. PRODUCTOS (LISTA Y TARJETAS)
    ========================================================= */
 .productos {
+  display: block;
   padding: 30px;
   margin: 40px 0;
   text-align: left;
-  min-height: calc(100vh - 300px); /* asegura altura mínima */
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+  min-height: calc(100vh - 300px);
+}
+
+.productos.oculto {
+  display: none !important;
 }
 
 .productos h2 {
@@ -110,7 +111,6 @@ main { margin-top: 90px; } /* 🔧 separa contenido del header fijo */
   margin-bottom: 20px;
 }
 
-/* Grid principal: 3 columnas en desktop */
 .grid-productos {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -120,7 +120,6 @@ main { margin-top: 90px; } /* 🔧 separa contenido del header fijo */
   align-items: start;
 }
 
-/* Tarjeta individual */
 .grid-productos .producto {
   background: #f8f8f8;
   border-radius: 12px;
@@ -164,22 +163,212 @@ main { margin-top: 90px; } /* 🔧 separa contenido del header fijo */
   box-shadow: 0 8px 18px rgba(0,0,0,0.15);
 }
 
-/* Responsive */
-@media (max-width: 1000px) {
-  .grid-productos { grid-template-columns: repeat(2, 1fr); }
-  .grid-productos .producto img {
-    max-width: 160px;
-    height: 120px;
-  }
+/* =========================================================
+   5. CARRITO DE COMPRAS
+   ========================================================= */
+#carrito {
+  display: block;
+  padding: 30px;
+  margin: 40px auto;
+  max-width: 900px;
+  min-height: calc(100vh - 300px);
 }
 
-@media (max-width: 600px) {
-  .grid-productos { grid-template-columns: 1fr; }
-  body { padding-top: 80px; }
+#carrito.oculto {
+  display: none !important;
+}
+
+.carrito-contenedor {
+  background: #fff;
+  border-radius: 15px;
+  padding: 40px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.carrito-contenedor h2 {
+  font-size: 2rem;
+  margin: 0 0 30px 0;
+  color: #0d1117;
+  text-align: center;
+  border-bottom: 3px solid #ff9d00;
+  padding-bottom: 15px;
+}
+
+.carrito-vacio {
+  text-align: center;
+  padding: 80px 20px;
+  color: #666;
+}
+
+#listaCarrito {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 25px;
+}
+
+.item-carrito {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8f9fa;
+  margin-bottom: 15px;
+  padding: 20px;
+  border-radius: 12px;
+  border-left: 5px solid #ff9d00;
+  transition: all 0.3s ease;
+}
+
+.item-carrito:hover {
+  background: #e9ecef;
+  transform: translateX(8px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.item-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 85%;
+}
+
+.item-nombre {
+  font-weight: 600;
+  color: #333;
+  font-size: 1rem;
+  flex: 1;
+}
+
+.item-precio {
+  font-weight: bold;
+  color: #ff9d00;
+  font-size: 1.2rem;
+  margin-left: 20px;
+  white-space: nowrap;
+}
+
+.btn-eliminar {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  min-width: 40px;
+}
+
+.btn-eliminar:hover {
+  background: #c82333;
+  transform: scale(1.1);
+}
+
+.carrito-total {
+  background: linear-gradient(135deg, #0d1117 0%, #1a1f2e 100%);
+  color: white;
+  padding: 25px;
+  border-radius: 12px;
+  text-align: center;
+  margin: 25px 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.carrito-total p {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+#total {
+  color: #ff9d00;
+  font-size: 2.5rem;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.carrito-acciones {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 25px;
+}
+
+.carrito-acciones button {
+  padding: 15px 35px;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  flex: 1;
+  max-width: 250px;
+}
+
+.btn-vaciar {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-vaciar:hover {
+  background: #5a6268;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(108, 117, 125, 0.4);
+}
+
+.btn-comprar {
+  background: #ff9d00;
+  color: white;
+}
+
+.btn-comprar:hover {
+  background: #e68a00;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(255, 157, 0, 0.5);
+}
+
+.carrito-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.contador-carrito {
+  position: absolute;
+  top: -8px;
+  right: -10px;
+  background-color: #dc3545;
+  color: white;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 4px 8px;
+  min-width: 20px;
+  text-align: center;
+  display: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.notificacion-carrito {
+  position: fixed;
+  top: 100px;
+  right: -400px;
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  padding: 18px 30px;
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  z-index: 9999;
+  transition: right 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.notificacion-carrito.show {
+  right: 30px;
 }
 
 /* =========================================================
-   5. DROPDOWN (MENÚ DE PRODUCTOS)
+   6. DROPDOWN (MENÚ DE PRODUCTOS)
    ========================================================= */
 .dropdown {
   position: relative;
@@ -226,7 +415,7 @@ main { margin-top: 90px; } /* 🔧 separa contenido del header fijo */
 .dropdown:hover .btn { background-color: #161b22; }
 
 /* =========================================================
-   6. SLIDER (CARRUSEL)
+   7. SLIDER (CARRUSEL)
    ========================================================= */
 .slider {
   position: relative;
@@ -252,7 +441,6 @@ main { margin-top: 90px; } /* 🔧 separa contenido del header fijo */
   border-radius: 15px;
 }
 
-/* Puntos de navegación */
 .dots {
   text-align: center;
   position: absolute;
@@ -275,7 +463,65 @@ main { margin-top: 90px; } /* 🔧 separa contenido del header fijo */
 .dot.active { background-color: #ff9d00; }
 
 /* =========================================================
-   7. FOOTER
+   8. CATEGORÍAS DESTACADAS
+   ========================================================= */
+.categorias-destacadas {
+  text-align: center;
+  margin: 40px 0;
+}
+
+.categorias-destacadas h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.grid-categorias {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.grid-categorias a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: #000;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.grid-categorias a:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+}
+
+.grid-categorias img {
+  width: 50px;
+  margin-bottom: 10px;
+}
+
+/* =========================================================
+   9. BENEFICIOS
+   ========================================================= */
+.beneficios {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin: 50px 0;
+  flex-wrap: wrap;
+  text-align: center;
+}
+
+.beneficios div { max-width: 250px; }
+.beneficios img { width: 40px; margin-bottom: 10px; }
+
+/* =========================================================
+   10. FOOTER
    ========================================================= */
 footer {
   bottom: 0;
@@ -344,7 +590,7 @@ footer {
 .footer-bottom a:hover { color: #fff; }
 
 /* =========================================================
-   8. MODAL LOGIN / REGISTRO
+   11. MODAL LOGIN / REGISTRO
    ========================================================= */
 .modal {
   display: none;
@@ -419,183 +665,102 @@ footer {
   margin-top: 8px;
   font-size: 14px;
   font-weight: bold;
-  display: block;     /* asegúrate que sea visible */
-  color: inherit;     /* hereda color por defecto */
-}
-
-
-/* =========================================================
-   9. CATEGORÍAS DESTACADAS
-   ========================================================= */
-.categorias-destacadas {
-  text-align: center;
-  margin: 40px 0;
-}
-
-.categorias-destacadas h2 {
-  font-size: 2rem;
-  margin-bottom: 20px;
-}
-
-.grid-categorias {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 20px;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.grid-categorias a {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: #fff;
-  padding: 15px;
-  border-radius: 12px;
-  text-decoration: none;
-  color: #000;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.grid-categorias a:hover {
-  transform: scale(1.05);
-  box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
-}
-
-.grid-categorias img {
-  width: 50px;
-  margin-bottom: 10px;
+  display: block;
+  color: inherit;
 }
 
 /* =========================================================
-   10. BENEFICIOS
+   RESPONSIVE
    ========================================================= */
-.beneficios {
-  display: flex;
-  justify-content: center;
-  gap: 40px;
-  margin: 50px 0;
-  flex-wrap: wrap;
-  text-align: center;
+@media (max-width: 1000px) {
+  .grid-productos { grid-template-columns: repeat(2, 1fr); }
+  .grid-productos .producto img {
+    max-width: 160px;
+    height: 120px;
+  }
 }
 
-.beneficios div { max-width: 250px; }
-.beneficios img { width: 40px; margin-bottom: 10px; }
+@media (max-width: 768px) {
+  body { padding-top: 80px; }
+  
+  .carrito-contenedor {
+    padding: 25px 15px;
+  }
 
-/* =========================================================
-   CONTROL DE SECCIONES (VISIBILIDAD Y LAYOUT)
-   ========================================================= */
+  .carrito-contenedor h2 {
+    font-size: 1.5rem;
+  }
 
-/* 🔧 Asegura que cada sección se muestre correctamente */
-.seccion {
-  display: block;      /* Siempre visible por defecto */
-  width: 100%;         /* Ocupa todo el ancho */
-  min-height: 200px;   /* Ajusta a algo razonable para que no se colapse */
-  padding: 20px;       /* Espaciado interno uniforme */
-  box-sizing: border-box;
+  .item-carrito {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 15px;
+  }
+
+  .item-info {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .item-precio {
+    margin-left: 0;
+    font-size: 1.1rem;
+  }
+
+  .btn-eliminar {
+    align-self: flex-end;
+    width: 100%;
+  }
+
+  .carrito-total {
+    padding: 20px;
+  }
+
+  .carrito-total p {
+    font-size: 1.2rem;
+  }
+
+  #total {
+    font-size: 2rem;
+  }
+
+  .carrito-acciones {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .carrito-acciones button {
+    width: 100%;
+    max-width: none;
+  }
+
+  .notificacion-carrito.show {
+    right: 10px;
+    left: 10px;
+    font-size: 0.9rem;
+  }
 }
 
-/* 🔧 Clase para ocultar secciones dinámicamente con JS */
-.oculto {
-  display: none !important; /* Fuerza ocultar sin importar otros estilos */
-}
+@media (max-width: 600px) {
+  .grid-productos { grid-template-columns: 1fr; }
+  
+  #carrito {
+    padding: 15px;
+  }
 
-/* === ESTILOS DEL CARRITO === */
-#carrito {
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 20px;
-  max-width: 600px;
-  margin: 20px auto;
-  box-shadow: 0px 2px 6px rgba(0,0,0,0.15);
-}
+  .carrito-contenedor h2 {
+    font-size: 1.3rem;
+  }
 
-#listaCarrito {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 15px;
-}
+  .item-nombre {
+    font-size: 0.9rem;
+  }
 
-#listaCarrito li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #f9f9f9;
-  margin-bottom: 8px;
-  padding: 10px;
-  border-radius: 5px;
-  font-weight: bold;
-  color: #333;
+  .contador-carrito {
+    font-size: 10px;
+    padding: 3px 6px;
+  }
 }
-
-#listaCarrito li button {
-  background: red;
-  color: white;
-  border: none;
-  padding: 4px 8px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-#listaCarrito li button:hover {
-  background: darkred;
-}
-
-#total {
-  font-weight: bold;
-  color: #000;
-}
-.carrito-wrapper {
-  position: relative;
-  display: inline-block;
-}
-
-.contador-carrito {
-  position: absolute;
-  top: -5px;
-  right: -8px;
-  background-color: red;
-  color: white;
-  border-radius: 50%;
-  font-size: 12px;
-  font-weight: bold;
-  padding: 2px 6px;
-  display: none; /* se muestra solo si hay productos */
-}
-
-/* Modal del carrito */
-#carritoModal .modal-content {
-  max-width: 500px;
-  background: #fff;
-  color: #000;
-  padding: 20px;
-  border-radius: 10px;
-}
-
-#carritoModal ul {
-  list-style: none;
-  padding: 0;
-  margin: 10px 0;
-}
-
-#carritoModal ul li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #f8f8f8;
-  margin: 5px 0;
-  padding: 8px 10px;
-  border-radius: 5px;
-}
-
-#carritoModal ul li button {
-  background: red;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-  padding: 3px 8px;
-}
-

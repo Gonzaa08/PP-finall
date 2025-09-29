@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Tienda Electrónica</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div id="header"></div>
+
+  <!-- SLIDER -->
+  <div id="slider"></div>
+
+  <!-- CATEGORÍAS -->
+  <div id="categorias"></div>
+
+  <!-- BENEFICIOS -->
+  <div id="beneficios"></div>
+
+  <!-- CARRITO -->
+  <div id="carrito-container"></div>
+
+  <!-- MODAL -->
+  <div id="modal"></div>
+
+  <!-- PRODUCTOS -->
+  <div id="productos"></div>
+
+  <!-- FOOTER -->
+  <div id="footer"></div>
+
+  <!-- LOADER -->
+  <script src="loader.js"></script>
+  <script>
+    // Aseguramos que loader.js termine de insertar todo y recién después cargamos script.js
+    document.addEventListener("partialsLoaded", () => {
+      console.log("📂 Partials confirmados. Cargando script.js...");
+      const script = document.createElement("script");
+      script.src = "script.js";
+      script.defer = true; // <- IMPORTANTE para que ejecute cuando el DOM esté listo
+      document.body.appendChild(script);
+    });
+  </script>
+</body>
+</html>
