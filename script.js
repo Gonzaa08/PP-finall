@@ -71,6 +71,131 @@ function vaciarCarrito() {
   }
 }
 
+// FINALIZAR COMPRA
+function finalizarCompra() {
+  // Verificar si está logueado
+  fetch("check_session.php")
+    .then(r => r.json())
+    .then(d => {
+      if (!d.authenticated) {
+        alert("Debe iniciar sesión para finalizar la compra");
+        document.getElementById("btnRegistro").click();
+        return;
+      }
+      
+      // Verificar que hay productos
+      if (carrito.length === 0) {
+        alert("El carrito está vacío");
+        return;
+      }
+      
+      // Calcular total
+      const total = carrito.reduce((sum, item) => sum + item.precio, 0);
+      
+      // Enviar pedido
+      const formData = new URLSearchParams();
+      formData.append('carrito', JSON.stringify(carrito));
+      formData.append('total', total);
+      
+      fetch("crear_pedido.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: formData.toString()
+      })
+      .then(r => r.json())
+      .then(d => {
+        if (d.status === "success") {
+          alert(`${d.message}\n\nNúmero de pedido: #${d.pedido_id}\n\nTotal: $${total.toFixed(2)}`);
+          
+          // Vaciar carrito
+          carrito = [];
+          localStorage.setItem("carrito", JSON.stringify(carrito));
+          actualizarCarrito();
+          
+          // Ir a mis pedidos
+          setTimeout(() => {
+            mostrarMisPedidos();
+          }, 1000);
+        } else {
+          alert(d.message);
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Error al procesar el pedido");
+      });
+    });
+}
+
+// MIS PEDIDOS
+function mostrarMisPedidos() {
+  ocultarTodo();
+  document.getElementById("misPedidos").classList.remove("oculto");
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  // Cargar pedidos
+  fetch("mis_pedidos.php")
+    .then(r => r.json())
+    .then(d => {
+      const lista = document.getElementById("listaPedidos");
+      
+      if (d.status === "error") {
+        lista.innerHTML = `<p style="text-align:center; color:red;">${d.message}</p>`;
+        return;
+      }
+      
+      if (d.pedidos.length === 0) {
+        lista.innerHTML = `
+          <div class="pedidos-vacio">
+            <p style="font-size: 3rem;">📦</p>
+            <p style="font-size: 1.2rem; font-weight: bold;">No tienes pedidos aún</p>
+            <p>¡Comienza a comprar para ver tus pedidos aquí!</p>
+          </div>
+        `;
+        return;
+      }
+      
+      // Mostrar pedidos
+      lista.innerHTML = d.pedidos.map(pedido => {
+        const fecha = new Date(pedido.fecha).toLocaleDateString('es-AR', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        
+        const productos = pedido.productos.map(p => 
+          `<li>${p.nombre} - $${p.precio.toFixed(2)}</li>`
+        ).join('');
+        
+        return `
+          <div class="pedido-card">
+            <div class="pedido-header">
+              <div>
+                <div class="pedido-numero">Pedido #${pedido.id}</div>
+                <div class="pedido-fecha">${fecha}</div>
+              </div>
+              <span class="pedido-estado estado-${pedido.estado}">${pedido.estado}</span>
+            </div>
+            
+            <div class="pedido-productos">
+              <strong>Productos:</strong>
+              <ul>${productos}</ul>
+            </div>
+            
+            <div class="pedido-total">Total: $${pedido.total}</div>
+          </div>
+        `;
+      }).join('');
+    })
+    .catch(err => {
+      console.error(err);
+      document.getElementById("listaPedidos").innerHTML = 
+        `<p style="text-align:center; color:red;">Error al cargar pedidos</p>`;
+    });
+}
+
 // NAVEGACIÓN
 function ocultarTodo() {
   document.getElementById("sliderSection")?.classList.add('oculto');
@@ -86,8 +211,71 @@ function mostrarInicio() {
   document.getElementById("beneficiosSection")?.classList.remove('oculto');
 }
 
+// VERIFICAR SESIÓN
+function verificarSesion() {
+  fetch("check_session.php")
+    .then(r => r.json())
+    .then(d => {
+      const btnReg = document.getElementById("btnRegistro");
+      const btnPedidos = document.getElementById("btnPedidos");
+      const modal = document.getElementById("modalRegistro");
+      
+      if (d.authenticated) {
+        // Usuario autenticado
+        btnReg.textContent = "👤 Mi Cuenta";
+        btnPedidos?.classList.remove("oculto"); // Mostrar botón pedidos
+        
+        // Modificar comportamiento del botón
+        btnReg.onclick = () => {
+          // Ocultar columnas de login y registro
+          document.querySelectorAll('.modal-form .columna').forEach((col, idx) => {
+            if (idx < 2) col.style.display = "none";
+          });
+          
+          // Mostrar columna Mi Cuenta
+          const columnaCuenta = document.getElementById('columnaMiCuenta');
+          columnaCuenta.style.display = "block";
+          
+          // Llenar datos
+          document.getElementById("userEmail").textContent = d.user.email;
+          document.getElementById("userDni").textContent = d.user.dni;
+          
+          // Mostrar modal
+          modal.style.display = "flex";
+        };
+      } else {
+        // Usuario no autenticado - comportamiento normal
+        btnReg.textContent = "🔑 Iniciar Sesión";
+        btnPedidos?.classList.add("oculto"); // Ocultar botón pedidos
+        
+        btnReg.onclick = () => {
+          // Mostrar columnas normales
+          document.querySelectorAll('.modal-form .columna').forEach((col, idx) => {
+            if (idx < 2) col.style.display = "block";
+          });
+          document.getElementById('columnaMiCuenta').style.display = "none";
+          modal.style.display = "flex";
+        };
+      }
+    })
+    .catch(() => {});
+}
+
+// Función cerrar sesión
+function cerrarSesion() {
+  fetch("logout.php")
+    .then(r => r.json())
+    .then(d => {
+      alert(d.message);
+      location.reload();
+    });
+}
+
 // CUANDO EL DOM ESTÉ LISTO
 document.addEventListener("DOMContentLoaded", () => {
+  
+  // Verificar sesión primero
+  verificarSesion();
   
   // SLIDER
   const slides = document.querySelectorAll(".slide");
@@ -126,6 +314,15 @@ document.addEventListener("DOMContentLoaded", () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
   
+  // BOTÓN MIS PEDIDOS
+  document.getElementById("btnPedidos")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    mostrarMisPedidos();
+  });
+  
+  // BOTÓN FINALIZAR COMPRA
+  document.querySelector('.btn-comprar')?.addEventListener('click', finalizarCompra);
+  
   // CATEGORÍAS
   document.querySelectorAll('.dropdown-content a, .grid-categorias a').forEach(link => {
     link.addEventListener('click', (e) => {
@@ -151,13 +348,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnReg = document.getElementById("btnRegistro");
   const cerrar = document.getElementById("cerrarModal");
 
-  btnReg?.addEventListener("click", () => modal.style.display = "flex");
   cerrar?.addEventListener("click", () => modal.style.display = "none");
   window.addEventListener("click", (e) => {
     if (e.target === modal) modal.style.display = "none";
   });
   
-  // FORMS
+  // FORM REGISTRO
   document.getElementById("formRegistro")?.addEventListener("submit", (e) => {
     e.preventDefault();
     const dni = document.getElementById("regDNI").value;
@@ -181,6 +377,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
   
+  // FORM LOGIN
   document.getElementById("formLogin")?.addEventListener("submit", (e) => {
     e.preventDefault();
     const msg = document.getElementById("mensajeLogin");
@@ -197,4 +394,62 @@ document.addEventListener("DOMContentLoaded", () => {
       if (d.status === "success") setTimeout(() => location.reload(), 1000);
     });
   });
+  
+  // FORM EDITAR
+  const formEditar = document.getElementById("formEditar");
+  if (formEditar) {
+    formEditar.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const msg = document.getElementById("mensajeEditar");
+      
+      const email = document.getElementById("editEmail").value;
+      const dni = document.getElementById("editDni").value;
+      
+      const formData = new URLSearchParams();
+      if (email) formData.append('email', email);
+      if (dni) formData.append('dni', dni);
+      
+      fetch("update_user.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: formData.toString()
+      })
+      .then(r => r.json())
+      .then(d => {
+        msg.textContent = d.message;
+        msg.style.color = d.status === "success" ? "lightgreen" : "red";
+        if (d.status === "success") {
+          document.getElementById("userEmail").textContent = d.user.email;
+          document.getElementById("userDni").textContent = d.user.dni;
+          document.getElementById("formEditar").reset();
+        }
+      });
+    });
+  }
+  
+  // FORM ELIMINAR
+  const formEliminar = document.getElementById("formEliminar");
+  if (formEliminar) {
+    formEliminar.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (!confirm("¿Eliminar tu cuenta? Esto NO se puede deshacer")) return;
+      
+      const msg = document.getElementById("mensajeEliminar");
+      const pass = document.getElementById("deletePass").value;
+      
+      fetch("delete_user.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `password=${encodeURIComponent(pass)}`
+      })
+      .then(r => r.json())
+      .then(d => {
+        msg.textContent = d.message;
+        msg.style.color = d.status === "success" ? "lightgreen" : "red";
+        if (d.status === "success") {
+          setTimeout(() => location.reload(), 2000);
+        }
+      });
+    });
+  }
 });

@@ -77,11 +77,29 @@ header {
   cursor: pointer;
   transition: transform 0.2s ease;
   filter: brightness(0) invert(1);
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .icon:hover {
   transform: scale(1.1);
   filter: brightness(0) invert(1) drop-shadow(0 0 5px rgba(255,255,255,0.7));
+}
+
+/* Arreglo específico para el emoji de pedidos */
+#btnPedidos {
+  font-size: 28px;
+  line-height: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carrito-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
 }
 
 /* =========================================================
@@ -763,4 +781,136 @@ footer {
     font-size: 10px;
     padding: 3px 6px;
   }
+}
+
+/* Estilos para Mi Cuenta */
+.info-usuario {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 4px solid #ff9d00;
+}
+
+.info-usuario p {
+  margin: 8px 0;
+  color: #333;
+}
+
+.columna h3 {
+  font-size: 1.1rem;
+  margin: 15px 0 10px;
+  color: #fff;
+}
+
+.columna hr {
+  border: none;
+  border-top: 1px solid #444;
+}
+
+/* =========================================================
+   MIS PEDIDOS
+   ========================================================= */
+.pedidos-contenedor {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.pedidos-contenedor h2 {
+  font-size: 2rem;
+  margin-bottom: 30px;
+  text-align: center;
+  color: #0d1117;
+}
+
+.pedido-card {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-left: 5px solid #ff9d00;
+}
+
+.pedido-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.pedido-numero {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #0d1117;
+}
+
+.pedido-fecha {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.pedido-estado {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+
+.estado-pendiente {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.estado-procesado {
+  background: #cce5ff;
+  color: #004085;
+}
+
+.estado-enviado {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.estado-entregado {
+  background: #d4edda;
+  color: #155724;
+}
+
+.pedido-productos {
+  margin: 15px 0;
+}
+
+.pedido-productos ul {
+  list-style: none;
+  padding: 0;
+}
+
+.pedido-productos li {
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+  color: #333;
+}
+
+.pedido-total {
+  text-align: right;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #ff9d00;
+  margin-top: 15px;
+}
+
+.pedidos-vacio {
+  text-align: center;
+  padding: 60px 20px;
+  color: #999;
+}
+
+.pedidos-vacio p {
+  font-size: 1.2rem;
+  margin: 10px 0;
 }

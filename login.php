@@ -1,5 +1,6 @@
 <?php
 require "db.php";
+require "session.php";
 
 $email = $_POST["email"];
 $pass  = $_POST["pass"];
@@ -15,7 +16,14 @@ if ($result->num_rows === 0) {
 } else {
     $user = $result->fetch_assoc();
     if (password_verify($pass, $user["password"])) {
-        echo json_encode(["status" => "success", "message" => "Login exitoso ✅"]);
+        // NUEVO: Guardar sesión
+        guardarSesion($user['id'], $user['email'], $user['dni']);
+        
+        echo json_encode([
+            "status" => "success", 
+            "message" => "Login exitoso ✅",
+            "user" => ["email" => $user['email'], "dni" => $user['dni']]
+        ]);
     } else {
         echo json_encode(["status" => "error", "message" => "Contraseña incorrecta ❌"]);
     }
